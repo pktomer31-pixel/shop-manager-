@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesticide Retailer Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="brand">
+      <div class="logo">PR</div>
+      <div>
+        <h2>Retailer Manager</h2>
+        <span>Pesticide Shop</span>
+      </div>
+    </div>
+
+    <button class="nav active" onclick="showScreen('dashboard')">
+      📊 Dashboard
+    </button>
+
+    <button class="nav" onclick="showScreen('sales')">
+      🧾 Sales / Bill
+    </button>
+
+    <button class="nav" onclick="showScreen('inventory')">
+      📦 Inventory
+    </button>
+
+    <button class="nav" onclick="showScreen('ledger')">
+      💰 Credits & Payments
+    </button>
+
+  </aside>
+
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p id="pageSubtitle">Overview of your pesticide business</p>
+      </div>
+
+      <button class="primary" onclick="showScreen('sales')">
+        + New Sale
+      </button>
+    </header>
+
+
+    <!-- ================= DASHBOARD ================= -->
+
+    <section id="dashboard" class="screen">
+
+      <div class="filter">
+
+        <div>
+          <label>From</label>
+          <input type="date" id="dashFrom">
+        </div>
+
+        <div>
+          <label>To</label>
+          <input type="date" id="dashTo">
+        </div>
+
+        <button class="secondary" onclick="renderDashboard()">
+          Apply
+        </button>
+
+        <button class="secondary" onclick="exportDashboard()">
+          Export Excel
+        </button>
+
+      </div>
+
+
+      <div class="cards">
+
+        <div class="card">
+          <span>Total Sales</span>
+          <h2 id="totalSales">₹0</h2>
+        </div>
+
+        <div class="card">
+          <span>Farmer Credit</span>
+          <h2 id="farmerCredit">₹0</h2>
+        </div>
+
+        <div class="card">
+          <span>Company Purchases</span>
+          <h2 id="companyPurchases">₹0</h2>
+        </div>
+
+        <div class="card">
+          <span>Paid To Companies</span>
+          <h2 id="companyPayments">₹0</h2>
+        </div>
+
+      </div>
+
+
+      <div class="two-columns">
+
+        <div class="panel">
+
+          <h3>Outstanding Farmer Credit</h3>
+
+          <div class="big-number" id="outstandingFarmer">
+            ₹0
+          </div>
+
+        </div>
+
+
+        <div class="panel">
+
+          <h3>Outstanding Company Payable</h3>
+
+          <div class="big-number" id="outstandingCompany">
+            ₹0
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="panel">
+
+        <div class="panel-title">
+
+          <h3>Low Stock Products</h3>
+
+        </div>
+
+        <div id="lowStock"></div>
+
+      </div>
+
+
+      <div class="panel">
+
+        <div class="panel-title">
+
+          <h3>Recent Sales</h3>
+
+        </div>
+
+        <div id="recentSales"></div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ================= SALES ================= -->
+
+    <section id="sales" class="screen hidden">
+
+      <div class="panel">
+
+        <h3>Create Farmer Bill</h3>
+
+        <div class="form-grid">
+
+          <div>
+            <label>Date</label>
+            <input type="date" id="saleDate">
+          </div>
+
+          <div>
+            <label>Farmer Name</label>
+            <input type="text" id="farmerName"
+              placeholder="Farmer name">
+          </div>
+
+          <div>
+            <label>Village</label>
+            <input type="text" id="village"
+              placeholder="Village">
+          </div>
+
+          <div>
+            <label>Bill Type</label>
+
+            <select id="billType">
+
+              <option value="Cash">
+                Cash
+              </option>
+
+              <option value="Credit">
+                Credit
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <h4>Add Products</h4>
+
+        <div class="product-row">
+
+          <select id="saleProduct"
+            onchange="updateSalePrice()">
+
+          </select>
+
+
+          <input
+            type="number"
+            id="saleQuantity"
+            placeholder="Qty"
+            min="1"
+          >
+
+
+          <input
+            type="number"
+            id="salePrice"
+            placeholder="Selling Price"
+          >
+
+
+          <button class="secondary"
+            onclick="addSaleProduct()">
+
+            Add Product
+
+          </button>
+
+        </div>
+
+
+        <p id="buyPriceInfo"></p>
+
+
+        <div class="table-container">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Buy Price</th>
+                <th>Sell Price</th>
+                <th>Total</th>
+                <th></th>
+
+              </tr>
+
+            </thead>
+
+            <tbody id="saleItems">
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div class="bill-total">
+
+          Total:
+          <strong id="billTotal">
+            ₹0
+          </strong>
+
+        </div>
+
+
+        <button class="primary"
+          onclick="saveSale()">
+
+          Save Bill
+
+        </button>
+
+      </div>
+
+
+
+      <div class="panel">
+
+        <div class="panel-title">
+
+          <h3>Sales History</h3>
+
+          <button class="secondary"
+            onclick="exportSales()">
+
+            Export Excel
+
+          </button>
+
+        </div>
+
+
+        <div class="filter">
+
+          <div>
+            <label>From</label>
+            <input type="date" id="salesFrom">
+          </div>
+
+          <div>
+            <label>To</label>
+            <input type="date" id="salesTo">
+          </div>
+
+          <button class="secondary"
+            onclick="renderSalesHistory()">
+
+            Filter
+
+          </button>
+
+        </div>
+
+
+        <div id="salesHistory"></div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ================= INVENTORY ================= -->
+
+    <section id="inventory" class="screen hidden">
+
+      <div class="panel">
+
+        <h3>Add Stock / Purchase</h3>
+
+        <div class="form-grid">
+
+          <div>
+            <label>Product</label>
+            <input id="productName"
+              placeholder="Product name">
+          </div>
+
+          <div>
+            <label>Company</label>
+            <input id="companyName"
+              placeholder="Company">
+          </div>
+
+          <div>
+            <label>Quantity</label>
+            <input type="number"
+              id="purchaseQuantity">
+          </div>
+
+          <div>
+            <label>Buy Price</label>
+            <input type="number"
+              id="buyPrice">
+          </div>
+
+          <div>
+            <label>Selling Price</label>
+            <input type="number"
+              id="sellingPrice">
+          </div>
+
+          <div>
+            <label>Date</label>
+            <input type="date"
+              id="purchaseDate">
+          </div>
+
+        </div>
+
+
+        <button class="primary"
+          onclick="addPurchase()">
+
+          Add Purchase
+
+        </button>
+
+      </div>
+
+
+
+      <div class="panel">
+
+        <div class="panel-title">
+
+          <h3>Current Inventory</h3>
+
+          <button class="secondary"
+            onclick="exportInventory()">
+
+            Export Excel
+
+          </button>
+
+        </div>
+
+
+        <div class="table-container">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>Product</th>
+                <th>Company</th>
+                <th>Stock</th>
+                <th>Buy Price</th>
+                <th>Sell Price</th>
+                <th>Stock Value</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody id="inventoryTable">
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="panel">
+
+        <div class="panel-title">
+
+          <h3>Purchase History</h3>
+
+          <button class="secondary"
+            onclick="exportPurchases()">
+
+            Export Excel
+
+          </button>
+
+        </div>
+
+        <div id="purchaseHistory"></div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ================= LEDGER ================= -->
+
+    <section id="ledger" class="screen hidden">
+
+      <div class="two-columns">
+
+
+        <!-- FARMER CREDIT -->
+
+        <div class="panel">
+
+          <div class="panel-title">
+
+            <h3>Farmer Credit</h3>
+
+            <button class="secondary"
+              onclick="exportFarmerCredit()">
+
+              Export Excel
+
+            </button>
+
+          </div>
+
+          <div id="farmerLedger"></div>
+
+        </div>
+
+
+        <!-- COMPANY PAYABLE -->
+
+        <div class="panel">
+
+          <div class="panel-title">
+
+            <h3>Company Payable</h3>
+
+            <button class="secondary"
+              onclick="exportCompanyPayable()">
+
+              Export Excel
+
+            </button>
+
+          </div>
+
+          <div id="companyLedger"></div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- FARMER PAYMENT -->
+
+      <div class="panel">
+
+        <h3>Receive Payment From Farmer</h3>
+
+        <div class="form-grid">
+
+          <div>
+            <label>Farmer Name</label>
+            <input id="paymentFarmer">
+          </div>
+
+          <div>
+            <label>Date</label>
+            <input type="date"
+              id="farmerPaymentDate">
+          </div>
+
+          <div>
+            <label>Amount</label>
+            <input type="number"
+              id="farmerPaymentAmount">
+          </div>
+
+          <div>
+            <label>Note</label>
+            <input id="farmerPaymentNote">
+          </div>
+
+        </div>
+
+        <button class="primary"
+          onclick="receiveFarmerPayment()">
+
+          Record Payment
+
+        </button>
+
+      </div>
+
+
+
+      <!-- COMPANY PAYMENT -->
+
+      <div class="panel">
+
+        <h3>Pay Company</h3>
+
+        <div class="form-grid">
+
+          <div>
+            <label>Company</label>
+            <input id="paymentCompany">
+          </div>
+
+          <div>
+            <label>Date</label>
+            <input type="date"
+              id="companyPaymentDate">
+          </div>
+
+          <div>
+            <label>Amount</label>
+            <input type="number"
+              id="companyPaymentAmount">
+          </div>
+
+          <div>
+            <label>Note</label>
+            <input id="companyPaymentNote">
+          </div>
+
+        </div>
+
+        <button class="primary"
+          onclick="payCompany()">
+
+          Record Payment
+
+        </button>
+
+      </div>
+
+
+
+      <div class="panel">
+
+        <div class="panel-title">
+
+          <h3>Payment History</h3>
+
+          <button class="secondary"
+            onclick="exportPayments()">
+
+            Export Excel
+
+          </button>
+
+        </div>
+
+        <div id="paymentHistory"></div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- Excel Library -->
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
+</script>
+
+<script src="app.js"></script>
+
+</body>
+</html>
